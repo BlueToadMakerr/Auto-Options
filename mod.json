@@ -1,24 +1,29 @@
 {
-	"geode": "4.6.3",
-	"gd": {
-		"win": "2.2074",
-		"android": "2.2074",
-		"mac": "2.2074",
-		"ios": "2.2074"
-	},
-	"id": "bluetoadmaker.autooption",
-	"name": "Auto Options",
-	"version": "v1.0.0",
-	"developer": "BlueToadMaker",
-	"description": "Places option triggers in such a way that you can make the game auto by holding",
-	"settings": {
-		"custom-setting-value": {
-		  "default": 0,
-		  "name": "Group ID",
-		  "description": "Adds group id to the option trigger (Enable if trying to control the triggers all at once)",
-		  "type": "int",
-		  "min": 0,
-		  "max": 1000
-		}
-	}
+  "geode": "4.6.3",
+  "gd": {
+    "android": "2.2074"
+  },
+  "id": "bluetoadmaker.autooption",
+  "name": "Auto Options",
+  "version": "v1.0.0",
+  "developer": "BlueToadMaker",
+  "description": "Places option triggers in such a way that you can make the game auto by holding",
+  "tags": ["editor"],
+  "links": {
+    "source": "https://github.com/BlueToadMakerr/Auto-Options"
+  },
+  "issues": {
+    "info": "Report issues on the GitHub repo",
+    "url": "https://github.com/BlueToadMakerr/Auto-Options/issues"
+  },
+  "settings": {
+    "custom-setting-value": {
+      "default": 0,
+      "name": "Group ID",
+      "description": "Adds group id to the option trigger (Enable if trying to control the triggers all at once)",
+      "type": "int",
+      "min": 0,
+      "max": 1000
+    }
+  }
 }

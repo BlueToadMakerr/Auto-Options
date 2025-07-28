@@ -68,27 +68,11 @@ class $modify(MyPlayerObject, PlayerObject) {
     }
 };
 
-// Hook LevelEditorLayer to track playtest state
+// Hook LevelEditorLayer to track skipJumpReleases
 class $modify(MyEditorLayer, LevelEditorLayer) {
     void onPlaytest() {
         g_skipJumpReleases = 2;
-        if (g_toggleBtn) g_toggleBtn->setVisible(false);
         LevelEditorLayer::onPlaytest();
-    }
-
-    void onResumePlaytest() {
-        if (g_toggleBtn) g_toggleBtn->setVisible(false);
-        LevelEditorLayer::onResumePlaytest();
-    }
-
-    void onPausePlaytest() {
-        if (g_toggleBtn) g_toggleBtn->setVisible(true);
-        LevelEditorLayer::onPausePlaytest();
-    }
-
-    void onStopPlaytest() {
-        if (g_toggleBtn) g_toggleBtn->setVisible(true);
-        LevelEditorLayer::onStopPlaytest();
     }
 };
 
@@ -106,6 +90,11 @@ class $modify(MyEditorUI, EditorUI) {
     void onToggleButton(CCObject*) {
         g_enableObjectSpawn = !g_enableObjectSpawn;
         updateButtonState();
+    }
+
+    void onPlaytest(CCObject* sender) {
+        EditorUI::onPlaytest(sender);
+        if (g_toggleBtn) g_toggleBtn->setVisible(m_editorLayer->m_playbackMode != PlaybackMode::Playing);
     }
 
     bool init(LevelEditorLayer* editor) {

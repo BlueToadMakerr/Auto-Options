@@ -11,7 +11,6 @@
 using namespace geode::prelude;
 
 bool g_enableObjectSpawn = false;
-int g_skipJumpReleases = 0;
 
 CCMenuItemSpriteExtra* g_toggleBtn = nullptr;
 
@@ -44,7 +43,7 @@ class $modify(MyPlayerObject, PlayerObject) {
         if (!lel || lel->m_playbackMode != PlaybackMode::Playing) return ret;
 
         if (btn == PlayerButton::Jump) {
-            placeCustomObject(this, -1); // push = release
+            placeCustomObject(this, -1);
         }
 
         return ret;
@@ -57,10 +56,7 @@ class $modify(MyPlayerObject, PlayerObject) {
         if (!lel || lel->m_playbackMode != PlaybackMode::Playing) return ret;
 
         if (btn == PlayerButton::Jump) {
-            if (g_skipJumpReleases > 0) {
-                g_skipJumpReleases--;
-            } else {
-                placeCustomObject(this, 1); // release = hold
+                placeCustomObject(this, 1);
             }
         }
 
@@ -71,7 +67,6 @@ class $modify(MyPlayerObject, PlayerObject) {
 // Hook LevelEditorLayer to track skipJumpReleases
 class $modify(MyEditorLayer, LevelEditorLayer) {
     void onPlaytest() {
-        g_skipJumpReleases = 2;
         if (g_toggleBtn) g_toggleBtn->setVisible(false);
         LevelEditorLayer::onPlaytest();
     }

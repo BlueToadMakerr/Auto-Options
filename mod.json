@@ -8,7 +8,7 @@
   },
   "id": "bluetoadmaker.autooption",
   "name": "Auto Options",
-  "version": "v1.1.0",
+  "version": "v1.1.1",
   "developer": "BlueToadMaker",
   "description": "Places option triggers in such a way that you can make the game auto by holding",
   "tags": ["editor", "offline", "enhancement"],

@@ -129,7 +129,7 @@ class $modify(MyEditorUI, EditorUI) {
         g_toggleBtn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(MyEditorUI::onToggleButton));
 
         if (m_playtestBtn && m_playtestBtn->getParent()) {
-            g_toggleBtn->setPosition(m_playtestBtn->getPosition() + ccp(-70.f, 0.f));
+            g_toggleBtn->setPosition(m_playtestBtn->getPosition() + {-70.f, 0.f});
             m_playtestBtn->getParent()->addChild(g_toggleBtn);
         }
 

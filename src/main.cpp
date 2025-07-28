@@ -98,7 +98,7 @@ class $modify(MyEditorUI, EditorUI) {
     void updateButtonState() {
         if (!g_toggleBtn) return;
 
-        auto spr = ButtonSprite::create("Auto/nOptions", 25, true, "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
+        auto spr = ButtonSprite::create("Auto\nOptions", 25, true, "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
         spr->setColor(g_enableObjectSpawn ? ccc3(255, 255, 255) : ccc3(100, 100, 100));
         g_toggleBtn->setNormalImage(spr);
     }
@@ -113,7 +113,7 @@ class $modify(MyEditorUI, EditorUI) {
 
         g_enableObjectSpawn = false; // Disabled by default
 
-        auto spr = ButtonSprite::create("Auto/nOptions", 25, true, "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
+        auto spr = ButtonSprite::create("Auto\nOptions", 25, true, "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
         spr->setColor(ccc3(100, 100, 100)); // Start grayed out
 
         g_toggleBtn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(MyEditorUI::onToggleButton));

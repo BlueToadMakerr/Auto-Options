@@ -113,8 +113,8 @@ class $modify(MyEditorUI, EditorUI) {
     #ifndef GEODE_IS_ANDROID
     void onPlaytest(CCObject* sender) {
         EditorUI::onPlaytest(sender);
-        if (m_editorLayer->m_playbackMode != PlaybackMode::Playing) return; // only edit visibility state if PlaybackMode is Playing
-        if (g_toggleBtn) g_toggleBtn->setVisible(false);
+        if (m_editorLayer->m_playbackMode != PlaybackMode::Paused) return; // only edit visibility state if PlaybackMode is Playing
+        if (g_toggleBtn) g_toggleBtn->setVisible(true);
     }
     #endif
 

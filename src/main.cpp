@@ -72,7 +72,25 @@ class $modify(MyPlayerObject, PlayerObject) {
 class $modify(MyEditorLayer, LevelEditorLayer) {
     void onPlaytest() {
         g_skipJumpReleases = 2;
+        if (g_toggleBtn) g_toggleBtn->setVisible(false);
         LevelEditorLayer::onPlaytest();
+    }
+
+    void onResumePlaytest() {
+        if (g_toggleBtn) g_toggleBtn->setVisible(false);
+        LevelEditorLayer::onResumePlaytest();
+    }
+
+    #ifdef GEODE_IS_ANDROID
+    void onPausePlaytest() {
+        if (g_toggleBtn) g_toggleBtn->setVisible(true);
+        LevelEditorLayer::onPausePlaytest();
+    }
+    #endif
+
+    void onStopPlaytest() {
+        if (g_toggleBtn) g_toggleBtn->setVisible(true);
+        LevelEditorLayer::onStopPlaytest();
     }
 };
 
@@ -92,10 +110,13 @@ class $modify(MyEditorUI, EditorUI) {
         updateButtonState();
     }
 
+    #ifndef GEODE_IS_ANDROID
     void onPlaytest(CCObject* sender) {
         EditorUI::onPlaytest(sender);
-        if (g_toggleBtn) g_toggleBtn->setVisible(m_editorLayer->m_playbackMode != PlaybackMode::Playing);
+        if (m_editorLayer->m_playbackMode != PlaybackMode::Playing) return; // only edit visibility state if PlaybackMode is Playing
+        if (g_toggleBtn) g_toggleBtn->setVisible(false);
     }
+    #endif
 
     bool init(LevelEditorLayer* editor) {
         if (!EditorUI::init(editor)) return false;

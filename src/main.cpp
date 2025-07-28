@@ -56,8 +56,7 @@ class $modify(MyPlayerObject, PlayerObject) {
         if (!lel || lel->m_playbackMode != PlaybackMode::Playing) return ret;
 
         if (btn == PlayerButton::Jump) {
-                placeCustomObject(this, 1);
-            }
+            placeCustomObject(this, 1);
         }
 
         return ret;

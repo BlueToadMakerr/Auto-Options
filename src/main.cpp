@@ -20,7 +20,7 @@ void placeCustomObject(PlayerObject* player, int holdState) {
     if (!g_enableObjectSpawn || !player || !player->m_editorEnabled) return;
 
     auto editor = LevelEditorLayer::get();
-    if (!editor || m_playbackMode != PlaybackMode::Playing) return;
+    if (!editor || editor->m_playbackMode != PlaybackMode::Playing) return;
 
     auto pos = player->getPosition();
     pos.y -= 90.f;
@@ -98,7 +98,8 @@ class $modify(MyEditorUI, EditorUI) {
         if (!g_toggleBtn) return;
 
         auto spr = ButtonSprite::create("Auto\nOptions", 25, true, "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
-        spr->setColor(g_enableObjectSpawn ? {255, 255, 255} : {100, 100, 100});
+        if (g_enableObjectSpawn) spr->setColor({255, 255, 255});
+        else spr->setColor({100, 100, 100});
         g_toggleBtn->setNormalImage(spr);
     }
 

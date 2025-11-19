@@ -14,35 +14,51 @@ bool g_enableObjectSpawn = false;
 
 CCMenuItemSpriteExtra* g_toggleBtn = nullptr;
 
-// Place object at player position with hold state
+// -----------------------------------------
+// Shared spawn function for P1 and P2
+// -----------------------------------------
 void placeCustomObject(PlayerObject* player, int holdState) {
-    if (!g_enableObjectSpawn || !player || !player->m_editorEnabled) return;
+    if (!g_enableObjectSpawn || !player || !player->m_editorEnabled)
+        return;
 
     auto editor = LevelEditorLayer::get();
-    if (!editor || editor->m_playbackMode != PlaybackMode::Playing) return;
+    if (!editor || editor->m_playbackMode != PlaybackMode::Playing)
+        return;
 
     auto pos = player->getPosition();
     pos.y -= 90.f;
 
     int settingVal = Mod::get()->getSettingValue<int>("custom-setting-value");
 
-    std::string objStr = fmt::format("1,2899,2,{},3,{},165,{}", pos.x, pos.y, holdState);
-    if (settingVal > 0) {
+    // Apply P2 offset: holdState += 2 if this is the second player
+    int finalHold = holdState;
+    if (player->m_isPlayer2)
+        finalHold += 2;
+
+    std::string objStr = fmt::format("1,2899,2,{},3,{},165,{}", pos.x, pos.y, finalHold);
+
+    if (settingVal > 0)
         objStr += fmt::format(",33,{}", settingVal);
-    }
 
     editor->createObjectsFromString(objStr.c_str(), false, false);
 }
 
-// Hook PlayerObject to detect jump input
+// -----------------------------------------
+// Player hook (handles both P1 and P2)
+// -----------------------------------------
 class $modify(MyPlayerObject, PlayerObject) {
     bool pushButton(PlayerButton btn) {
         auto ret = PlayerObject::pushButton(btn);
-        if (!m_editorEnabled || !g_enableObjectSpawn) return ret;
-        LevelEditorLayer* lel = LevelEditorLayer::get();
-        if (!lel || lel->m_playbackMode != PlaybackMode::Playing) return ret;
+
+        if (!m_editorEnabled || !g_enableObjectSpawn)
+            return ret;
+
+        auto lel = LevelEditorLayer::get();
+        if (!lel || lel->m_playbackMode != PlaybackMode::Playing)
+            return ret;
 
         if (btn == PlayerButton::Jump) {
+            // P1 = -1, P2 = (-1 + 2) = 1
             placeCustomObject(this, -1);
         }
 
@@ -51,11 +67,16 @@ class $modify(MyPlayerObject, PlayerObject) {
 
     bool releaseButton(PlayerButton btn) {
         auto ret = PlayerObject::releaseButton(btn);
-        if (!m_editorEnabled || !g_enableObjectSpawn) return ret;
-        LevelEditorLayer* lel = LevelEditorLayer::get();
-        if (!lel || lel->m_playbackMode != PlaybackMode::Playing) return ret;
+
+        if (!m_editorEnabled || !g_enableObjectSpawn)
+            return ret;
+
+        auto lel = LevelEditorLayer::get();
+        if (!lel || lel->m_playbackMode != PlaybackMode::Playing)
+            return ret;
 
         if (btn == PlayerButton::Jump) {
+            // P1 = 1, P2 = (1 + 2) = 3
             placeCustomObject(this, 1);
         }
 
@@ -63,7 +84,9 @@ class $modify(MyPlayerObject, PlayerObject) {
     }
 };
 
-// Hook LevelEditorLayer to track skipJumpReleases
+// -----------------------------------------
+// LevelEditorLayer visibility logic
+// -----------------------------------------
 class $modify(MyEditorLayer, LevelEditorLayer) {
     void onPlaytest() {
         if (g_toggleBtn) g_toggleBtn->setVisible(false);
@@ -75,12 +98,12 @@ class $modify(MyEditorLayer, LevelEditorLayer) {
         LevelEditorLayer::onResumePlaytest();
     }
 
-    #ifdef GEODE_IS_ANDROID
+#ifdef GEODE_IS_ANDROID
     void onPausePlaytest() {
         if (g_toggleBtn) g_toggleBtn->setVisible(true);
         LevelEditorLayer::onPausePlaytest();
     }
-    #endif
+#endif
 
     void onStopPlaytest() {
         if (g_toggleBtn) g_toggleBtn->setVisible(true);
@@ -88,14 +111,21 @@ class $modify(MyEditorLayer, LevelEditorLayer) {
     }
 };
 
-// Hook EditorUI to add toggle button
+// -----------------------------------------
+// Editor UI (toggle button)
+// -----------------------------------------
 class $modify(MyEditorUI, EditorUI) {
     void updateButtonState() {
         if (!g_toggleBtn) return;
 
-        auto spr = ButtonSprite::create("Auto\nOptions", 25, true, "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
-        if (g_enableObjectSpawn) spr->setColor({255, 255, 255});
-        else spr->setColor({100, 100, 100});
+        auto spr = ButtonSprite::create("Auto\nOptions", 25, true,
+            "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
+
+        if (g_enableObjectSpawn)
+            spr->setColor({255, 255, 255});
+        else
+            spr->setColor({100, 100, 100});
+
         g_toggleBtn->setNormalImage(spr);
     }
 
@@ -104,23 +134,27 @@ class $modify(MyEditorUI, EditorUI) {
         updateButtonState();
     }
 
-    #ifndef GEODE_IS_ANDROID
+#ifndef GEODE_IS_ANDROID
     void onPlaytest(CCObject* sender) {
         EditorUI::onPlaytest(sender);
-        if (m_editorLayer->m_playbackMode != PlaybackMode::Paused) return; // only edit visibility state if PlaybackMode is Playing
+        if (m_editorLayer->m_playbackMode != PlaybackMode::Paused)
+            return;
         if (g_toggleBtn) g_toggleBtn->setVisible(true);
     }
-    #endif
+#endif
 
     bool init(LevelEditorLayer* editor) {
-        if (!EditorUI::init(editor)) return false;
+        if (!EditorUI::init(editor))
+            return false;
 
-        g_enableObjectSpawn = false; // Disabled by default
+        g_enableObjectSpawn = false;
 
-        auto spr = ButtonSprite::create("Auto\nOptions", 25, true, "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
-        spr->setColor({100, 100, 100}); // Start grayed out
+        auto spr = ButtonSprite::create("Auto\nOptions", 25, true,
+            "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
+        spr->setColor({100, 100, 100});
 
-        g_toggleBtn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(MyEditorUI::onToggleButton));
+        g_toggleBtn = CCMenuItemSpriteExtra::create(
+            spr, this, menu_selector(MyEditorUI::onToggleButton));
 
         if (m_playtestBtn && m_playtestBtn->getParent()) {
             g_toggleBtn->setPosition(m_playtestBtn->getPosition() + ccp(70.f, 0.f));

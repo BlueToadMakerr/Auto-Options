@@ -44,6 +44,7 @@ jobs:
           # export-pdb: true
           combine: true
           target: ${{ matrix.config.target }}
+          cmake-flags: -DGEODE_USE_LIBCXX=ON
 
   package:
     name: Package builds

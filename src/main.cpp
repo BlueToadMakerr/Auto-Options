@@ -32,7 +32,7 @@ void placeCustomObject(PlayerObject* player, int holdState) {
 
     // Apply P2 offset: holdState += 2 if this is the second player
     int finalHold = holdState;
-    if (player->m_isPlayer2)
+    if (player->m_isSecondPlayer)
         finalHold += 2;
 
     std::string objStr = fmt::format("1,2899,2,{},3,{},165,{}", pos.x, pos.y, finalHold);

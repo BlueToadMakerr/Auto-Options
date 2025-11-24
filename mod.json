@@ -30,7 +30,7 @@
       "max": 9999
     },
     "hidebtn": {
-      "default": False,
+      "default": false,
       "name": "Hide the button",
       "type": "bool"
     }

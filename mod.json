@@ -28,6 +28,11 @@
       "type": "int",
       "min": 0,
       "max": 9999
+    },
+    "hidebtn": {
+      "default": False,
+      "name": "Hide the button",
+      "type": "bool"
     }
   }
 }

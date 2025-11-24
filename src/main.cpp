@@ -27,12 +27,14 @@ void placeCustomObject(PlayerObject* player, int holdState) {
 
     int settingVal = Mod::get()->getSettingValue<int>("custom-setting-value");
 
-    // Get the correct id for each player
     int playerNumber = 165;
     if (player->m_isSecondPlayer)
         playerNumber = 199;
 
-    std::string objStr = fmt::format("1,2899,2,{},3,{},{},{}", pos.x, pos.y, playerNumber, holdState);
+    std::string objStr = fmt::format(
+        "1,2899,2,{},3,{},{},{}",
+        pos.x, pos.y, playerNumber, holdState
+    );
 
     if (settingVal > 0)
         objStr += fmt::format(",33,{}", settingVal);
@@ -40,7 +42,6 @@ void placeCustomObject(PlayerObject* player, int holdState) {
     editor->createObjectsFromString(objStr.c_str(), false, false);
 }
 
-// Player Hook
 class $modify(MyPlayerObject, PlayerObject) {
     bool pushButton(PlayerButton btn) {
         auto ret = PlayerObject::pushButton(btn);
@@ -52,9 +53,8 @@ class $modify(MyPlayerObject, PlayerObject) {
         if (!lel || lel->m_playbackMode != PlaybackMode::Playing)
             return ret;
 
-        if (btn == PlayerButton::Jump) {
+        if (btn == PlayerButton::Jump)
             placeCustomObject(this, -1);
-        }
 
         return ret;
     }
@@ -69,17 +69,13 @@ class $modify(MyPlayerObject, PlayerObject) {
         if (!lel || lel->m_playbackMode != PlaybackMode::Playing)
             return ret;
 
-        if (btn == PlayerButton::Jump) {
+        if (btn == PlayerButton::Jump)
             placeCustomObject(this, 1);
-        }
 
         return ret;
     }
 };
 
-// -----------------------------------------
-// LevelEditorLayer visibility logic
-// -----------------------------------------
 class $modify(MyEditorLayer, LevelEditorLayer) {
     void onPlaytest() {
         if (g_toggleBtn) g_toggleBtn->setVisible(false);
@@ -102,15 +98,19 @@ class $modify(MyEditorLayer, LevelEditorLayer) {
     }
 };
 
-// -----------------------------------------
-// Editor UI (toggle button)
-// -----------------------------------------
 class $modify(MyEditorUI, EditorUI) {
     void updateButtonState() {
         if (!g_toggleBtn) return;
 
-        auto spr = ButtonSprite::create("Auto\nOptions", 25, true,
-            "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
+        auto spr = ButtonSprite::create(
+            "Auto\nOptions",
+            25,
+            true,
+            "bigFont.fnt",
+            "GJ_button_01.png",
+            40.f,
+            0.6f
+        );
 
         if (g_enableObjectSpawn)
             spr->setColor({255, 255, 255});
@@ -140,16 +140,34 @@ class $modify(MyEditorUI, EditorUI) {
 
         g_enableObjectSpawn = false;
 
-        auto spr = ButtonSprite::create("Auto\nOptions", 25, true,
-            "bigFont.fnt", "GJ_button_01.png", 40.f, 0.6f);
-        spr->setColor({100, 100, 100});
+        bool hideBtn = Mod::get()->getSettingValue<bool>("hideBtn");
 
-        g_toggleBtn = CCMenuItemSpriteExtra::create(
-            spr, this, menu_selector(MyEditorUI::onToggleButton));
+        if (!hideBtn) {
+            auto spr = ButtonSprite::create(
+                "Auto\nOptions",
+                25,
+                true,
+                "bigFont.fnt",
+                "GJ_button_01.png",
+                40.f,
+                0.6f
+            );
+            spr->setColor({100, 100, 100});
 
-        if (m_playtestBtn && m_playtestBtn->getParent()) {
-            g_toggleBtn->setPosition(m_playtestBtn->getPosition() + ccp(70.f, 0.f));
-            m_playtestBtn->getParent()->addChild(g_toggleBtn);
+            g_toggleBtn = CCMenuItemSpriteExtra::create(
+                spr,
+                this,
+                menu_selector(MyEditorUI::onToggleButton)
+            );
+
+            if (m_playtestBtn && m_playtestBtn->getParent()) {
+                g_toggleBtn->setPosition(
+                    m_playtestBtn->getPosition() + ccp(70.f, 0.f)
+                );
+                m_playtestBtn->getParent()->addChild(g_toggleBtn);
+            }
+        } else {
+            g_toggleBtn = nullptr;
         }
 
         return true;

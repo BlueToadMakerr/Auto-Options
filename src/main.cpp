@@ -14,9 +14,6 @@ bool g_enableObjectSpawn = false;
 
 CCMenuItemSpriteExtra* g_toggleBtn = nullptr;
 
-// -----------------------------------------
-// Shared spawn function for P1 and P2
-// -----------------------------------------
 void placeCustomObject(PlayerObject* player, int holdState) {
     if (!g_enableObjectSpawn || !player || !player->m_editorEnabled)
         return;
@@ -30,12 +27,12 @@ void placeCustomObject(PlayerObject* player, int holdState) {
 
     int settingVal = Mod::get()->getSettingValue<int>("custom-setting-value");
 
-    // Apply P2 offset: holdState += 2 if this is the second player
-    int finalHold = holdState;
+    // Get the correct id for each player
+    int playerNumber = 165;
     if (player->m_isSecondPlayer)
-        finalHold += 2;
+        playerNumber = 199;
 
-    std::string objStr = fmt::format("1,2899,2,{},3,{},165,{}", pos.x, pos.y, finalHold);
+    std::string objStr = fmt::format("1,2899,2,{},3,{},{},{}", pos.x, pos.y, playerNumber, holdState);
 
     if (settingVal > 0)
         objStr += fmt::format(",33,{}", settingVal);
@@ -43,9 +40,7 @@ void placeCustomObject(PlayerObject* player, int holdState) {
     editor->createObjectsFromString(objStr.c_str(), false, false);
 }
 
-// -----------------------------------------
-// Player hook (handles both P1 and P2)
-// -----------------------------------------
+// Player Hook
 class $modify(MyPlayerObject, PlayerObject) {
     bool pushButton(PlayerButton btn) {
         auto ret = PlayerObject::pushButton(btn);
@@ -58,7 +53,6 @@ class $modify(MyPlayerObject, PlayerObject) {
             return ret;
 
         if (btn == PlayerButton::Jump) {
-            // P1 = -1, P2 = (-1 + 2) = 1
             placeCustomObject(this, -1);
         }
 
@@ -76,7 +70,6 @@ class $modify(MyPlayerObject, PlayerObject) {
             return ret;
 
         if (btn == PlayerButton::Jump) {
-            // P1 = 1, P2 = (1 + 2) = 3
             placeCustomObject(this, 1);
         }
 
@@ -98,12 +91,10 @@ class $modify(MyEditorLayer, LevelEditorLayer) {
         LevelEditorLayer::onResumePlaytest();
     }
 
-#ifdef GEODE_IS_ANDROID
     void onPausePlaytest() {
         if (g_toggleBtn) g_toggleBtn->setVisible(true);
         LevelEditorLayer::onPausePlaytest();
     }
-#endif
 
     void onStopPlaytest() {
         if (g_toggleBtn) g_toggleBtn->setVisible(true);

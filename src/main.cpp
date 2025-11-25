@@ -1,7 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/EditorUI.hpp>
 #include <Geode/modify/PlayerObject.hpp>
-//#include <Geode/modify/LevelEditorLayer.hpp>
+#include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/LevelEditorLayer.hpp>
 #include <Geode/binding/PlayerObject.hpp>
 #include <Geode/binding/GameObject.hpp>
